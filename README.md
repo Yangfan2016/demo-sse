@@ -1,2 +1,2 @@
 # demo-sse
-sever stream event
+sever send event

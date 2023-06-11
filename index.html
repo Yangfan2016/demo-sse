@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <button id="btn">send</button>
+    <pre id="preview"></pre>
+    <script>
+        function send() {
+            const sse = new EventSource('http://localhost:3000/sse');
+
+            /*
+             * 这将仅监听类似下面的事件
+             *
+             * event: notice
+             * data: useful data
+             * id: someid
+             */
+            sse.addEventListener("notice", (e) => {
+                console.log('notice', e.data);
+            });
+
+            /*
+             * 同理，以下代码将监听具有字段 `event: update` 的事件
+             */
+            sse.addEventListener("update", (e) => {
+                console.log('update', e.data);
+            });
+
+            /*
+             * “message”事件是一个特例，因为它可以捕获没有 event 字段的事件，
+             * 以及具有特定类型 `event：message` 的事件。
+             * 它不会触发任何其他类型的事件。
+             */
+            sse.addEventListener("message", (e) => {
+                console.log('message', e.data);
+                preview.innerHTML += e.data + '<br/>';
+            });
+
+            sse.addEventListener("end", (e) => {
+                console.log('end', e.data);
+                sse.close();
+                preview.innerHTML += '<hr/>';
+            });
+            // setTimeout(() => {
+            //     es.close()
+            // }, 3e3);
+        }
+        btn.addEventListener('click', send);
+    </script>
+</body>
+
+</html>
